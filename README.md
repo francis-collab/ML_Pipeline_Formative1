@@ -9,16 +9,7 @@ Time-series Preprocessing, Exploratory Analysis & Modeling for a multivariate st
 
 ---
 
-# Task 2 - Database Design & Implementation
 
-## Overview
-Designed and implemented both a relational (MySQL) and non-relational (MongoDB) representation of the same stock time-series dataset.
-
-- **MySQL**: normalized schema across four tables — `stocks`, `price_history`, `technical_indicators`, `news_sentiment` — linked by `stock_id` / `price_id` foreign keys. Schema defined in `database/schema.sql`.
-- **MongoDB**: a single `stock_records` collection with `price`, `indicators`, and `sentiment` embedded as sub-documents per record.
-- `migrate.py` moves data from the MySQL tables into the MongoDB collection to keep both databases in sync.
-
-**Contribution (Task 2)**: Schema design, MySQL loading script (`load_data.py`), MongoDB loading script (`load_mongo.py`), migration script (`migrate.py`).
 
 ---
 
