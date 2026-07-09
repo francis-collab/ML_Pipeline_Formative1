@@ -8,7 +8,50 @@ Time-series Preprocessing, Exploratory Analysis & Modeling for a multivariate st
 **Contribution (Task 1)**: Full EDA, analytical questions, feature engineering, model experiments (3 classical ML models), visualizations, and best model selection.
 
 ---
+## Task 2 - Database Design & Implementation
 
+### What we did
+For this part we took the same stock dataset from Task 1 and set it up in two 
+different kinds of databases — MySQL (relational) and MongoDB (non-relational) — 
+just to see how the same data looks and works in each one.
+
+### MySQL side
+Instead of putting everything into one giant table, we split it into four:
+
+- **stocks** – basic info about the stock
+- **price_history** – daily open/high/low/close/volume and the target we're predicting
+- **technical_indicators** – SMA, EMA, RSI, MACD, Bollinger Bands, etc.
+- **news_sentiment** – the day's headline plus its sentiment score/label
+
+We separated indicators and sentiment from the raw price data since those are 
+values we calculated ourselves, not stuff that came straight from the source — 
+felt weird mixing "real" data with "computed" data in the same table. Everything's 
+connected through `stock_id` and `price_id` foreign keys. The actual table 
+definitions are in `database/schema.sql`, and there's an ERD image in 
+`database/erd_diagram.png` if you want to see how it all connects.
+
+### MongoDB side
+For Mongo we didn't bother splitting things up — one document per trading day, 
+with the price info, indicators, and sentiment all nested inside it in a single 
+`stock_records` collection. Mongo doesn't do joins the same way SQL does, so it 
+just made more sense to keep everything for a given day together in one place.
+
+### Scripts we wrote
+- `load_data.py` – loads the CSV into the MySQL tables
+- `load_mongo.py` – loads the CSV directly into MongoDB
+- `migrate.py` – takes what's already in MySQL and copies it over into MongoDB too, 
+  so both databases end up with the same data
+
+We kept passwords out of the actual files that get pushed — used placeholders 
+instead so nobody's credentials end up on GitHub.
+
+### Queries
+Ran the 3 required queries on both databases (getting the latest record, pulling 
+records from a date range, and one that looks at sentiment). Screenshots and 
+results are in `database/queries_results.md`.
+
+**What I worked on:** designed the schema, wrote `load_data.py`, `load_mongo.py`, 
+and `migrate.py`, made the ERD, and ran all the queries on both databases.
 
 
 ---
