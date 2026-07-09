@@ -17,12 +17,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Path to the dataset - adjust if you keep your own copy elsewhere.
-# Defaults to the shared copy in stock-pipeline-task2/ (read-only access,
-# no editing of that folder needed).
+
 DATA_PATH = os.getenv("STOCK_CSV_PATH", "../stock-pipeline-task2/stock_dataset.csv")
 
-# ---- 1. Connect to MySQL (credentials from .env) ----
 conn = mysql.connector.connect(
     host=os.getenv("MYSQL_HOST", "localhost"),
     user=os.getenv("MYSQL_USER", "root"),
@@ -36,7 +33,7 @@ df = pd.read_csv(DATA_PATH)
 df["Date"] = pd.to_datetime(df["Date"])
 df = df.replace({np.nan: None})
 
-# Reuse the stock row if this script is re-run, instead of duplicating it
+
 cursor.execute("SELECT stock_id FROM stocks WHERE symbol = %s", ("SYN1",))
 existing = cursor.fetchone()
 if existing:
@@ -50,7 +47,7 @@ else:
     stock_id = cursor.lastrowid
 print(f"Using stock_id={stock_id}")
 
-# ---- 3. Insert each row into price_history, technical_indicators, news_sentiment ----
+
 price_sql = """
     INSERT INTO price_history
         (stock_id, trade_date, open_price, high_price, low_price, close_price, volume, target)

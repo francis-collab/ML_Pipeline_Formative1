@@ -46,9 +46,7 @@ def _doc_to_out(doc: dict) -> StockRecordOut:
     )
 
 
-# ---------------------------------------------------------------------------
-# POST /mongo/records  - create
-# ---------------------------------------------------------------------------
+
 @router.post("", response_model=StockRecordOut, status_code=201)
 def create_record(record: StockRecordIn):
     collection = get_mongo_collection()
@@ -68,10 +66,6 @@ def create_record(record: StockRecordIn):
     doc["_id"] = result.inserted_id
     return _doc_to_out(doc)
 
-
-# ---------------------------------------------------------------------------
-# GET /mongo/records/latest  - latest record (declared before /{record_id})
-# ---------------------------------------------------------------------------
 @router.get("/latest", response_model=StockRecordOut)
 def get_latest_record(symbol: Optional[str] = Query(None)):
     collection = get_mongo_collection()
@@ -82,9 +76,6 @@ def get_latest_record(symbol: Optional[str] = Query(None)):
     return _doc_to_out(doc)
 
 
-# ---------------------------------------------------------------------------
-# GET /mongo/records/range  - records by date range
-# ---------------------------------------------------------------------------
 @router.get("/range", response_model=List[StockRecordOut])
 def get_records_by_range(
     start_date: date = Query(..., description="Inclusive start date, YYYY-MM-DD"),
@@ -98,10 +89,6 @@ def get_records_by_range(
     docs = collection.find(query).sort("date", 1)
     return [_doc_to_out(d) for d in docs]
 
-
-# ---------------------------------------------------------------------------
-# GET /mongo/records  - list (paginated)
-# ---------------------------------------------------------------------------
 @router.get("", response_model=List[StockRecordOut])
 def list_records(
     symbol: Optional[str] = Query(None),
@@ -113,10 +100,6 @@ def list_records(
     docs = collection.find(query).sort("date", -1).skip(offset).limit(limit)
     return [_doc_to_out(d) for d in docs]
 
-
-# ---------------------------------------------------------------------------
-# GET /mongo/records/{record_id}  - read one
-# ---------------------------------------------------------------------------
 @router.get("/{record_id}", response_model=StockRecordOut)
 def get_record(record_id: str):
     collection = get_mongo_collection()
@@ -125,10 +108,6 @@ def get_record(record_id: str):
         raise HTTPException(status_code=404, detail=f"record {record_id} not found")
     return _doc_to_out(doc)
 
-
-# ---------------------------------------------------------------------------
-# PUT /mongo/records/{record_id}  - partial update
-# ---------------------------------------------------------------------------
 @router.put("/{record_id}", response_model=StockRecordOut)
 def update_record(record_id: str, update: StockRecordUpdate):
     collection = get_mongo_collection()
@@ -156,10 +135,6 @@ def update_record(record_id: str, update: StockRecordUpdate):
     doc = collection.find_one({"_id": oid})
     return _doc_to_out(doc)
 
-
-# ---------------------------------------------------------------------------
-# DELETE /mongo/records/{record_id}
-# ---------------------------------------------------------------------------
 @router.delete("/{record_id}", status_code=204)
 def delete_record(record_id: str):
     collection = get_mongo_collection()

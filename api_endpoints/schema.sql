@@ -1,10 +1,4 @@
--- schema.sql
--- Recreates the MySQL schema used by stock-pipeline-task2/load_data.py
--- Run this once against a fresh database before running load_data.py.
---
--- Usage:
---   mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS stock_pipeline;"
---   mysql -u root -p stock_pipeline < schema.sql
+
 
 CREATE TABLE IF NOT EXISTS stocks (
     stock_id      INT AUTO_INCREMENT PRIMARY KEY,
@@ -50,7 +44,7 @@ CREATE TABLE IF NOT EXISTS news_sentiment (
     FOREIGN KEY (price_id) REFERENCES price_history(price_id)
 );
 
--- Helpful indexes for the time-series queries in Task 3
+
 CREATE INDEX idx_price_history_date ON price_history(trade_date);
 CREATE INDEX idx_technical_indicators_price ON technical_indicators(price_id);
 CREATE INDEX idx_news_sentiment_price ON news_sentiment(price_id);

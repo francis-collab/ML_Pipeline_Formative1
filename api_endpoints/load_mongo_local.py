@@ -19,13 +19,13 @@ load_dotenv()
 
 DATA_PATH = os.getenv("STOCK_CSV_PATH", "../stock-pipeline-task2/stock_dataset.csv")
 
-# ---- 1. Connect to Atlas (URI from .env) ----
+
 CONNECTION_STRING = os.getenv("MONGO_URI", "mongodb://localhost:27017")
 client = MongoClient(CONNECTION_STRING)
 db = client[os.getenv("MONGO_DATABASE", "stock_pipeline")]
 collection = db["stock_records"]
 
-# ---- 2. Load and clean CSV ----
+
 df = pd.read_csv(DATA_PATH)
 df["Date"] = pd.to_datetime(df["Date"])
 df = df.replace({np.nan: None})
@@ -39,7 +39,7 @@ def label_from_compound(score):
         return "negative"
     return "neutral"
 
-# ---- 3. Build documents ----
+
 documents = []
 for _, row in df.iterrows():
     doc = {
@@ -72,7 +72,7 @@ for _, row in df.iterrows():
     }
     documents.append(doc)
 
-# ---- 4. Insert (clears old entries first, safe to re-run) ----
+
 collection.delete_many({})
 result = collection.insert_many(documents)
 print(f"Inserted {len(result.inserted_ids)} documents into stock_records.")
