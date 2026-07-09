@@ -3,7 +3,7 @@ import numpy as np
 from pymongo import MongoClient
 
 # ---- 1. Connect to Atlas ----
-CONNECTION_STRING = "mongodb+srv://stockuser:<db_password>@cluster0.blype8i.mongodb.net/?appName=Cluster0"
+CONNECTION_STRING = "mongodb+srv:Berissa@123@cluster0.vbtebyo.mongodb.net/?appName=Cluster0"
 client = MongoClient(CONNECTION_STRING)
 db = client["stock_pipeline"]
 collection = db["stock_records"]
