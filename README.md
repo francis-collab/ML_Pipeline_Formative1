@@ -90,15 +90,52 @@ uvicorn api:app --reload
 Interactive docs: `http://127.0.0.1:8000/docs`
 
 ---
+# task 4 - prediction script
 
-# Task 4 - Prediction/Forecast Script
-*(to be completed)*
+## overview
+`prediction/predict.py` just ties tasks 1 to 3 together into one script that makes a forecast:
 
-Will fetch a record from the Task 3 API, apply the same preprocessing pipeline as Task 1, load `models/best_model.pkl`, and return a prediction.
+1. **fetch** - grabs the anchor record from the task 3 api (`/records/latest`), then its last 30 days of history from `/records/range`. works with either backend (`--source sql` or `--source mongo`).
+2. **preprocess** - `prediction/preprocessing.py` redoes the same task 1 pipeline on that window, time interpolate + forward fill for the missing values, then builds the features (`lag_1`, `lag_5`, `ma_5`, `rolling_mean_5`, `rolling_std_5`, `dayofweek`, `month`, `is_weekend`).
+3. **load model** - loads the xgboost model from `models/best_model.pkl` and lines the columns up to match what it trained on (`feature_names_in_`).
+4. **predict** - spits out the next day price movement (down / stable / up) with the probabilities.
+
+### the sentiment thing
+the task 1 model was trained on the `Sentiment_Pos/Neg/Neu/Compound` columns, but the task 2 databases only keep the headline, compound score and label. we checked and those sentiment columns are just the vader scores of `Clean_Headline` (all 1000 rows matched), so the script recomputes them from the headline the api gives back, same values the model saw when it trained.
+
+### how to run it
+```bash
+# start the task 3 api first (see the task 3 section above)
+cd prediction
+pip install -r requirements.txt
+python predict.py                    # latest record, mysql
+python predict.py --source mongo     # same but from mongodb
+python predict.py --date 2022-06-15  # a specific date
+```
+
+what it looks like when you run it:
+```
+==============================================================
+task 4 - stock price movement forecast
+==============================================================
+[fetch] got latest record from /sql/records/latest -> 2023-10-31
+[fetch] pulled 22 records from /sql/records/range (2023-10-01 .. 2023-10-31)
+[prep] made 27 columns over 22 days
+[model] loaded XGBClassifier from models/best_model.pkl
+--------------------------------------------------------------
+anchor record: 2023-10-31  (source: SQL)
+forecast: next day price movement = DOWN
+probabilities: Down=0.994  Stable=0.004  Up=0.002
+==============================================================
+```
+
+running it with `--source mongo` gives the same forecast, we checked that the features from the api match the notebook to within 1e-14 and both backends give back the same records.
+
+**contribution (task 4)**: `prediction/predict.py`, `prediction/preprocessing.py`, the sentiment reconstruction bit, and testing it end to end against both databases.
 
 ---
 
-## Repo Structure
+## repo structure
 ```bash
 ML_Pipeline_Formative1/
 ├── data/
@@ -120,6 +157,10 @@ ML_Pipeline_Formative1/
 │   ├── requirements.txt
 │   ├── .env.example
 │   └── README_task3.md
+├── prediction/                                       
+│   ├── predict.py
+│   ├── preprocessing.py
+│   └── requirements.txt
 ├── models/
 │   └── best_model.pkl                                
 ├── reports/
@@ -132,8 +173,7 @@ ML_Pipeline_Formative1/
 └── .gitignore
 ```
 
-## How to Run Task 1 Notebook
-1. Upload `stock_dataset.csv` to Colab `data/` folder.
-2. Open `Group6_Formative1_MLPipeline_Task1.ipynb`.
-
+## how to run task 1 notebook
+1. upload `stock_dataset.csv` to the colab `data/` folder.
+2. open `Group6_Formative1_MLPipeline_Task1.ipynb`.
 
