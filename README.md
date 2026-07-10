@@ -183,7 +183,4 @@ ML_Pipeline_Formative1/
 └── .gitignore
 ```
 
-## how to run task 1 notebook
-1. upload `stock_dataset.csv` to the colab `data/` folder.
-2. open `Group6_Formative1_MLPipeline_Task1.ipynb`.
 
