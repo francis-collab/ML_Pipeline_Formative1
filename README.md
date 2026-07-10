@@ -7,6 +7,16 @@ Time-series Preprocessing, Exploratory Analysis & Modeling for a multivariate st
 
 **Contribution (Task 1)**: Full EDA, analytical questions, feature engineering, model experiments (3 classical ML models), visualizations, and best model selection.
 
+## How to Run Task 1 Notebook
+1. Upload `stock_dataset.csv` to Colab `data/` folder.
+2. Open `Group6_Formative1_MLPipeline_Task1.ipynb`.
+3. Run cells sequentially (Imports → EDA → Feature Engineering → Experiments → Testing).
+
+## Key Results (Task 1)
+- **Best Model**: Tuned XGBoost (Accuracy ~0.845, F1 ~0.820 on cross-validation)
+- **Test Set Performance**: Accuracy 0.858, F1 0.818 on unseen data
+- Strong performance on Up/Down movements; Stable class is harder due to market noise (expected).
+
 ---
 ## Task 2 - Database Design & Implementation
 
