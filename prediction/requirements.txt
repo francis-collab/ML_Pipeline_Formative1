@@ -1,0 +1,8 @@
+# task 4 prediction script - stuff we need
+requests
+pandas
+numpy
+joblib
+scikit-learn
+xgboost
+vaderSentiment

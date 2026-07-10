@@ -1,15 +1,32 @@
+"""
+load_mongo_local.py
+Standalone copy of stock-pipeline-task2/load_mongo.py, adapted to read
+the connection string from .env instead of being hardcoded, and to run
+from the task3-api/ folder without touching your teammate's original files.
+
+Usage:
+    cd task3-api
+    python load_mongo_local.py
+"""
+
+import os
 import pandas as pd
 import numpy as np
 from pymongo import MongoClient
+from dotenv import load_dotenv
 
-# ---- 1. Connect to Atlas ----
-CONNECTION_STRING = "mongodb+srv:Berissa@123@cluster0.vbtebyo.mongodb.net/?appName=Cluster0"
+load_dotenv()
+
+DATA_PATH = os.getenv("STOCK_CSV_PATH", "../stock-pipeline-task2/stock_dataset.csv")
+
+
+CONNECTION_STRING = os.getenv("MONGO_URI", "mongodb://localhost:27017")
 client = MongoClient(CONNECTION_STRING)
-db = client["stock_pipeline"]
+db = client[os.getenv("MONGO_DATABASE", "stock_pipeline")]
 collection = db["stock_records"]
 
-# ---- 2. Load and clean CSV ----
-df = pd.read_csv("stock_dataset.csv")
+
+df = pd.read_csv(DATA_PATH)
 df["Date"] = pd.to_datetime(df["Date"])
 df = df.replace({np.nan: None})
 
@@ -22,7 +39,7 @@ def label_from_compound(score):
         return "negative"
     return "neutral"
 
-# ---- 3. Build documents ----
+
 documents = []
 for _, row in df.iterrows():
     doc = {
@@ -55,6 +72,8 @@ for _, row in df.iterrows():
     }
     documents.append(doc)
 
-# ---- 4. Insert ----
+
+collection.delete_many({})
 result = collection.insert_many(documents)
 print(f"Inserted {len(result.inserted_ids)} documents into stock_records.")
+
